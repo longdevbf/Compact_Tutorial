@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "file": "index.cjs",
+  "sourceRoot": "../",
+  "sources": ["midnight.compact"],
+  "names": [],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EAAA;;;;;;;;MAMA,AAAA,YAEC;;;;;;;;;;;;;;;;;;;;OAAA;;;GAAC;EARF;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;IAIA;;;;;;;;;uDAAiC;;;;;;;GAI/B;EAFF,AAAA,gBAEC;IADG;;;;;;;;;uDAAO;;GACV;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;IAJD;qCAAA;;;;;;;;;;;wFAAiC;KAAA;;;;;;;;;;;;;;"
+}
