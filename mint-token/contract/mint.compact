@@ -1,0 +1,102 @@
+/**
+ * @file SimpleNFT Minting Contract (Standalone)
+ * @author Long
+ * @license MIT
+ *
+ * A minimal, self-contained NFT minting example in Compact.
+ * This version does NOT depend on the Midnight NFT module.
+ */
+
+pragma language_version 0.17;
+
+import CompactStandardLibrary;
+
+// =====================
+// NFT Metadata Structure
+// =====================
+export struct SimpleNFT {
+  id: Uint<64>,               // NFT ID
+  name: Bytes<32>,            // NFT name
+  owner: ZswapCoinPublicKey,  // Owner's public key
+  uri: Bytes<64>              // Metadata URI (optional)
+}
+
+// =====================
+// Ledger storage
+// =====================
+export ledger nfts: Map<Uint<64>, SimpleNFT>;
+export ledger totalSupply: Counter;
+
+// =====================
+// Constructor
+// =====================
+constructor() {
+  totalSupply.increment(0);
+}
+
+// =====================
+// Circuits
+// =====================
+
+//Mint a new NFT
+export circuit mintNFT(name: Bytes<32>, uri: Bytes<64>): [] {
+  const minter = ownPublicKey();
+  const newId = (totalSupply.read() + 1) as Uint<64>;
+
+  // Check that the NFT ID doesn’t exist
+  assert(!nfts.member(disclose(newId)), "NFT already exists");
+
+  // Create metadata
+  const nft = SimpleNFT {
+    id: newId,
+    name: name,
+    owner: minter,
+    uri: uri
+  };
+
+  // Save NFT to ledger
+  nfts.insert(disclose(newId), disclose(nft));
+
+  // Increment counter
+  totalSupply.increment(1);
+}
+
+//Get NFT info
+export circuit getNFT(id: Uint<64>): SimpleNFT {
+  assert(nfts.member(disclose(id)), "NFT does not exist");
+  return nfts.lookup(disclose(id));
+}
+
+//Get total number of NFTs minted
+export circuit getTotalSupply(): Uint<64> {
+  return totalSupply;
+}
+
+//Transfer NFT ownership
+export circuit transferNFT(id: Uint<64>, to: ZswapCoinPublicKey): [] {
+  const sender = ownPublicKey();
+  assert(nfts.member(disclose(id)), "NFT does not exist");
+
+  const nft = nfts.lookup(disclose(id));
+  assert(nft.owner == sender, "Only owner can transfer");
+
+  const updatedNFT = SimpleNFT {
+    id: nft.id,
+    name: nft.name,
+    owner: to,
+    uri: nft.uri
+  };
+
+  nfts.insert(disclose(id), disclose(updatedNFT));
+}
+
+//Burn (delete) an NFT
+export circuit burnNFT(id: Uint<64>): [] {
+  const sender = ownPublicKey();
+  assert(nfts.member(disclose(id)), "NFT does not exist");
+
+  const nft = nfts.lookup(disclose(id));
+  assert(nft.owner == sender, "Only owner can burn");
+
+  nfts.remove(disclose(id));
+}

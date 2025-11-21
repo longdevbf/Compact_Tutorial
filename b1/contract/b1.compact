@@ -1,0 +1,37 @@
+pragma language_version 0.17;
+/*
+import standard library
+*/
+import CompactStandardLibrary;
+/*
+For example purpose, define an enum have two states is UnSET and SET
+And if default state is UNSET that means you not authorized but if you verify succesfully you will be SET
+*/
+enum State{
+    UNSET,
+    SET
+}
+/*
+export ledger that means you defina a public state variable named authority of type Byte<32>
+and this variable will be stored on ledger like key value on evm chains but we use for midnight
+*/
+export ledger authority: Byte<32>;
+
+export ledger value: Uint<64>;
+
+export ledger state: State;
+
+export ledger round: Counter;
+/*
+You can defina a constructor function that will be called when you deploy the contract
+and it receives two parameters sk of type Bytes<32> and v of type Uint<64>
+and it will set the authority variable to the public key derived from sk
+and set the value variable to v
+and set the state variable to State.SET
+*/
+constructor(sk: Bytes<32>, v: Uint<64>) {
+  authority = disclose(publicKey(round, sk));
+  value = disclose(v);
+  state = State.SET;
+}
+
